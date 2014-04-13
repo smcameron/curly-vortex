@@ -26,8 +26,8 @@
  * See: https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/papers/046-bridson.pdf
  */
 
-int xdim = 800;
-int ydim = 600;
+int xdim = 400;
+int ydim = 300;
 int nparticles = 30000;
 int framenumber = 0;
 
@@ -43,9 +43,9 @@ PImage img;
 
 void setup()
 {
-	size(xdim, ydim);
+	size(xdim * 2, ydim * 2);
 	frameRate(30);
-	img = createImage(xdim, ydim, RGB); 
+	img = createImage(xdim * 2, ydim * 2, RGB); 
 	img.loadPixels();
 	for (int j = 0; j < img.pixels.length; j++) {
 		img.pixels[j] = color(0, 0, 0);
@@ -110,9 +110,7 @@ void draw()
 	int tx, ty;
 	color clr;
 
-	if ((framenumber % 5) == 0) {
-		update_velocity_field();
-	}
+	update_velocity_field();
 	for (int j = 0; j < img.pixels.length; j++) {
 		img.pixels[j] = color(0, 0, 0);
 	}
@@ -134,7 +132,10 @@ void draw()
 			v = 0.5;
 		v = v / 0.5;	
 		clr = heatmap(v);
-		img.pixels[xdim * ty + tx] = clr;
+		img.pixels[xdim * 2 * (ty * 2) + tx * 2] = clr;
+		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + 1] = clr;
+		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + xdim * 2] = clr;
+		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + 1 + xdim * 2] = clr;
 		pl[i]--;
 		if (pl[i] <= 0) {
 			px[i] = random(xdim);
