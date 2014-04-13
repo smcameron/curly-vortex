@@ -26,9 +26,9 @@
  * See: https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/papers/046-bridson.pdf
  */
 
-int xdim = 400;
-int ydim = 300;
-int nparticles = 10000;
+int xdim = 600;
+int ydim = 350;
+int nparticles = 20000;
 int framenumber = 0;
 
 float[][] vx = new float[xdim][ydim];
@@ -45,10 +45,10 @@ void setup()
 {
 	size(xdim * 2, ydim * 2);
 	frameRate(30);
-	img = createImage(xdim * 2, ydim * 2, RGB); 
+	img = createImage(xdim * 2, ydim * 2, ARGB); 
 	img.loadPixels();
 	for (int j = 0; j < img.pixels.length; j++) {
-		img.pixels[j] = color(0, 0, 0);
+		img.pixels[j] = color(0, 0, 0, 255);
 	}
 
 	for (int i = 0; i < nparticles; i++) {
@@ -63,8 +63,8 @@ void setup()
 void update_velocity_field()
 { 
 	int x, y, r, g, b;
-	float nscale = 2.0;
-	float amp = 200.0;
+	float nscale = 3.5;
+	float amp = 150.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
@@ -90,7 +90,7 @@ void update_velocity_field()
 	c = c + 0.005;
 } 
 
-color heatmap(float val)
+color heatmap(float val, float alpha)
 {
 	float r, g, b;
 
@@ -101,8 +101,9 @@ color heatmap(float val)
 	if (r < 0)
 		r = 0;
 	g = 255.0 - r / 2.5 - b / 2.5;
-	return color(int(r), int(g), int(b));
+	return color(int(r), int(g), int(b), alpha);
 }
+
 
 void draw()
 {
@@ -110,11 +111,11 @@ void draw()
 	int tx, ty;
 	color clr;
 
-	if ((framenumber % 5) == 0) {
+	if ((framenumber % 2) == 0) {
 		update_velocity_field();
 	}
 	for (int j = 0; j < img.pixels.length; j++) {
-		img.pixels[j] = color(0, 0, 0);
+		img.pixels[j] = color(0, 0, 0, 255);
 	}
 	img.updatePixels();
 	for (int i = 0; i < nparticles; i++) {
@@ -132,11 +133,26 @@ void draw()
 		v = sqrt(ivx * ivx + ivy * ivy);
 		if (v > 6.0)
 			v = 6.0;
-		clr = heatmap(v / 2.0);
+		clr = heatmap(v / 2.0, 200);
+
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				if ((ty + j) < 0 || ty + j >= ydim) {
+					continue;
+				}
+				if ((tx + k) < 0 || tx + k >= xdim) {
+					continue;
+				}
+				img.pixels[xdim * 2 * ((ty + j) * 2) +
+						(tx + k) * 2] = clr;
+			}
+		}
+/*
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2] = clr;
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + 1] = clr;
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + xdim * 2] = clr;
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + 1 + xdim * 2] = clr;
+*/
 		pl[i]--;
 		if (pl[i] <= 0) {
 			px[i] = random(xdim);
