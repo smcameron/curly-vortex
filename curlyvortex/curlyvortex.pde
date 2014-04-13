@@ -64,7 +64,7 @@ void update_velocity_field()
 { 
 	int x, y, r, g, b;
 	float nscale = 2.0;
-	float amp = 60.0;
+	float amp = 200.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
@@ -130,10 +130,9 @@ void draw()
 		px[i] += ivx;
 		py[i] += ivy;
 		v = sqrt(ivx * ivx + ivy * ivy);
-		if (v > 0.5)
-			v = 0.5;
-		v = v / 0.5;	
-		clr = heatmap(v);
+		if (v > 6.0)
+			v = 6.0;
+		clr = heatmap(v / 2.0);
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2] = clr;
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + 1] = clr;
 		img.pixels[xdim * 2 * (ty * 2) + tx * 2 + xdim * 2] = clr;
