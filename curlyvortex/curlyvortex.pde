@@ -26,15 +26,16 @@
  * See: https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/papers/046-bridson.pdf
  */
 
-int xdim = 400;
-int ydim = 400;
-int nparticles = 10000;
+int xdim = 800;
+int ydim = 600;
+int nparticles = 30000;
 int framenumber = 0;
 
 float[][] vx = new float[xdim][ydim];
 float[][] vy = new float[xdim][ydim];
 float[] px = new float[nparticles];
 float[] py = new float[nparticles];
+int pl[] = new int[nparticles];
 
 float c;
 
@@ -53,6 +54,7 @@ void setup()
 	for (int i = 0; i < nparticles; i++) {
 		px[i] = random(xdim);
 		py[i] = random(ydim);
+		pl[i] = int(random(nparticles / 100));
 	}
 	img.updatePixels();
 	c = 1.3;
@@ -85,7 +87,7 @@ void update_velocity_field()
 			vy[x][y] = ny;
 		}
 	}
-	c = c + 0.005;
+	c = c + 0.05;
 } 
 
 void draw()
@@ -112,10 +114,15 @@ void draw()
 		ivy = vy[tx][ty];
 		px[i] += ivx;
 		py[i] += ivy;
+		pl[i]--;
+		if (pl[i] <= 0) {
+			px[i] = random(xdim);
+			py[i] = random(ydim);
+			pl[i] = int(random(nparticles / 100));
+		}
 	}
 	img.updatePixels();
 	image(img, 0, 0);
 	framenumber++;
-	println("frame:" + framenumber);
 }
 
