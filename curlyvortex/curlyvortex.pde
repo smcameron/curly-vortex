@@ -28,7 +28,7 @@
 
 int xdim = 400;
 int ydim = 300;
-int nparticles = 30000;
+int nparticles = 10000;
 int framenumber = 0;
 
 float[][] vx = new float[xdim][ydim];
@@ -64,7 +64,7 @@ void update_velocity_field()
 { 
 	int x, y, r, g, b;
 	float nscale = 2.0;
-	float amp = 100.0;
+	float amp = 60.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
@@ -79,10 +79,10 @@ void update_velocity_field()
 			fy2 = ((float(y + 1) + dy) / float(ydim)) * nscale;
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx2, fy1, c);
-			nx = amp * (n2 - n1);
+			ny = amp * (n2 - n1);
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx1, fy2, c);
-			ny = amp * (n2 - n1);
+			nx = amp * (n2 - n1);
 			vx[x][y] = nx;
 			vy[x][y] = ny;
 		}
@@ -110,7 +110,9 @@ void draw()
 	int tx, ty;
 	color clr;
 
-	update_velocity_field();
+	if ((framenumber % 5) == 0) {
+		update_velocity_field();
+	}
 	for (int j = 0; j < img.pixels.length; j++) {
 		img.pixels[j] = color(0, 0, 0);
 	}
