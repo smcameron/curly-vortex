@@ -48,16 +48,32 @@ void setup()
 void draw()
 { 
 	int x, y, r, g, b;
-	float fx, fy, n;
+	float nscale = 2.0;
+	float amp = 100.0;
+	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
 		for (y = 0; y < ydim; y++) {
-			fx = (float(x) / float(xdim)) * 5.0;
-			fy = (float(y) / float(ydim)) * 5.0;
-			n = noise(fx, fy, c);
-			r = int(n * 255.0);
-			g = int(n * 255.0);
-			b = int(n * 255.0);
+			dx =  (random(100) * 0.005) - 0.25;
+			dy =  (random(100) * 0.005) - 0.25;
+			fx1 = ((float(x - 1) + dx) / float(xdim)) * nscale;
+			fy1 = ((float(y - 1) + dy) / float(ydim)) * nscale;
+			dx =  (random(100) * 0.005) - 0.25;
+			dy =  (random(100) * 0.005) - 0.25;
+			fx2 = ((float(x + 1) + dx) / float(xdim)) * nscale;
+			fy2 = ((float(y + 1) + dy) / float(ydim)) * nscale;
+			n1 = noise(fx1, fy1, c);
+			n2 = noise(fx2, fy1, c);
+			nx = amp * (n2 - n1);
+			n1 = noise(fx1, fy1, c);
+			n2 = noise(fx1, fy2, c);
+			ny = amp * (n2 - n1);
+			v = sqrt(nx * nx + ny * ny);
+			r = int(v * 255.0);
+			if (r > 255)
+				r = 255;
+			g = r;
+			b = r;
 			img.set(x, y, color(r, g, b));
 		}
 	}
