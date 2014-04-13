@@ -79,7 +79,7 @@ void update_velocity_field()
 			fy2 = ((float(y + 1) + dy) / float(ydim)) * nscale;
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx2, fy1, c);
-			ny = amp * (n2 - n1);
+			ny = -amp * (n2 - n1);
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx1, fy2, c);
 			nx = amp * (n2 - n1);
