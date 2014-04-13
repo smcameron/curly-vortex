@@ -28,6 +28,14 @@
 
 int xdim = 400;
 int ydim = 400;
+int nparticles = 10000;
+int framenumber = 0;
+
+float[][] vx = new float[xdim][ydim];
+float[][] vy = new float[xdim][ydim];
+float[] px = new float[nparticles];
+float[] py = new float[nparticles];
+
 float c;
 
 PImage img;
@@ -41,11 +49,16 @@ void setup()
 	for (int j = 0; j < img.pixels.length; j++) {
 		img.pixels[j] = color(0, 0, 0);
 	}
+
+	for (int i = 0; i < nparticles; i++) {
+		px[i] = random(xdim);
+		py[i] = random(ydim);
+	}
 	img.updatePixels();
 	c = 1.3;
 }
 
-void draw()
+void update_velocity_field()
 { 
 	int x, y, r, g, b;
 	float nscale = 2.0;
@@ -68,16 +81,41 @@ void draw()
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx1, fy2, c);
 			ny = amp * (n2 - n1);
-			v = sqrt(nx * nx + ny * ny);
-			r = int(v * 255.0);
-			if (r > 255)
-				r = 255;
-			g = r;
-			b = r;
-			img.set(x, y, color(r, g, b));
+			vx[x][y] = nx;
+			vy[x][y] = ny;
 		}
 	}
-	image(img, 0, 0);
 	c = c + 0.005;
 } 
+
+void draw()
+{
+	float ivx, ivy;
+	int tx, ty;
+
+	if ((framenumber % 20) == 0) {
+		update_velocity_field();
+	}
+	for (int j = 0; j < img.pixels.length; j++) {
+		img.pixels[j] = color(0, 0, 0);
+	}
+	img.updatePixels();
+	for (int i = 0; i < nparticles; i++) {
+		tx = int(px[i]) % xdim;
+		ty = int(py[i]) % ydim;
+		if (tx < 0)
+			tx = int(random(xdim));
+		if (ty < 0)
+			ty = int(random(ydim));
+		img.pixels[xdim * ty + tx] = color(255, 255, 255);
+		ivx = vx[tx][ty];
+		ivy = vy[tx][ty];
+		px[i] += ivx;
+		py[i] += ivy;
+	}
+	img.updatePixels();
+	image(img, 0, 0);
+	framenumber++;
+	println("frame:" + framenumber);
+}
 
