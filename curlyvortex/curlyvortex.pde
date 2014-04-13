@@ -87,15 +87,30 @@ void update_velocity_field()
 			vy[x][y] = ny;
 		}
 	}
-	c = c + 0.05;
+	c = c + 0.005;
 } 
+
+color heatmap(float val)
+{
+	float r, g, b;
+
+	b = 255.0 * (1.0 - val / 0.5) + 30;
+	if (b < 0)
+		b = 0;
+	r = 255.0 * (val / 0.5 - 0.5) + 30;
+	if (r < 0)
+		r = 0;
+	g = 255.0 - r / 2.5 - b / 2.5;
+	return color(int(r), int(g), int(b));
+}
 
 void draw()
 {
-	float ivx, ivy;
+	float ivx, ivy, v;
 	int tx, ty;
+	color clr;
 
-	if ((framenumber % 20) == 0) {
+	if ((framenumber % 5) == 0) {
 		update_velocity_field();
 	}
 	for (int j = 0; j < img.pixels.length; j++) {
@@ -109,11 +124,17 @@ void draw()
 			tx = int(random(xdim));
 		if (ty < 0)
 			ty = int(random(ydim));
-		img.pixels[xdim * ty + tx] = color(255, 255, 255);
+		
 		ivx = vx[tx][ty];
 		ivy = vy[tx][ty];
 		px[i] += ivx;
 		py[i] += ivy;
+		v = sqrt(ivx * ivx + ivy * ivy);
+		if (v > 0.5)
+			v = 0.5;
+		v = v / 0.5;	
+		clr = heatmap(v);
+		img.pixels[xdim * ty + tx] = clr;
 		pl[i]--;
 		if (pl[i] <= 0) {
 			px[i] = random(xdim);
