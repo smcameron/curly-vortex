@@ -26,11 +26,16 @@
  * See: https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/papers/046-bridson.pdf
  */
 
+/* user adjustable parameters */
+String source_image_file = "/home/scameron/test.jpg";
 int xdim = 1400;
 int ydim = 700;
 int nparticles = 500000;
 int framenumber = 0;
-PImage source_color = loadImage("/home/scameron/test.jpg");
+PImage source_color = loadImage(source_image_file);
+float noise_scale = 15.0; /* xdim / 100 is not a bad default. */
+float velocity_amplification = 30.0; /* xdim / 50 is not a bad default. */
+
 
 float[][] vx = new float[xdim][ydim];
 float[][] vy = new float[xdim][ydim];
@@ -77,9 +82,9 @@ void setup()
 void update_velocity_field()
 { 
 	int x, y, r, g, b;
-	float nxscale = 15;
+	float nxscale = noise_scale;
 	float nyscale = nxscale * float(ydim) / float(xdim);
-	float amp = 30.0;
+	float amp = velocity_amplification;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
