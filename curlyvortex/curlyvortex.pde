@@ -30,6 +30,7 @@ int xdim = 1400;
 int ydim = 700;
 int nparticles = 500000;
 int framenumber = 0;
+PImage source_color = loadImage("/home/scameron/test.jpg");
 
 float[][] vx = new float[xdim][ydim];
 float[][] vy = new float[xdim][ydim];
@@ -44,6 +45,8 @@ PImage img;
 
 void setup()
 {
+	int cx, cy;
+
 	size(xdim, ydim);
 	frameRate(30);
 	img = createImage(xdim, ydim, ARGB); 
@@ -58,9 +61,15 @@ void setup()
 		py[i] = random(ydim);
 		//pl[i] = int(random(nparticles / 100));
 		pl[i] = 1000;
-		pc[i] = color((px[i] / 5) % 100 + 100,
-			255 - (px[i] + py[i] / 2) % 255,
-			(500 - (px[i]) % 255) / 2, 40);
+		if (source_color != null) {
+			cx = int(float(source_color.width) * px[i] / float(xdim));
+			cy = int(float(source_color.height) * py[i] / float(ydim));
+			pc[i] = source_color.pixels[cy * source_color.width + cx]; 
+		} else {
+			pc[i] = color((px[i] / 5) % 100 + 100,
+				255 - (px[i] + py[i] / 2) % 255,
+				(500 - (px[i]) % 255) / 2, 40);
+		}
 	}
 	c = 1.3;
 }
@@ -68,9 +77,9 @@ void setup()
 void update_velocity_field()
 { 
 	int x, y, r, g, b;
-	float nxscale = 9.3;
+	float nxscale = 15;
 	float nyscale = nxscale * float(ydim) / float(xdim);
-	float amp = 80.0;
+	float amp = 30.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
