@@ -28,7 +28,7 @@
 
 int xdim = 1400;
 int ydim = 700;
-int nparticles = 200000;
+int nparticles = 500000;
 int framenumber = 0;
 
 float[][] vx = new float[xdim][ydim];
@@ -68,9 +68,9 @@ void setup()
 void update_velocity_field()
 { 
 	int x, y, r, g, b;
-	float nxscale = 1.3;
+	float nxscale = 9.3;
 	float nyscale = nxscale * float(ydim) / float(xdim);
-	float amp = 900.0;
+	float amp = 80.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
@@ -93,7 +93,7 @@ void update_velocity_field()
 			vy[x][y] = ny;
 		}
 	}
-	c = c + 0.005;
+	c = c + 0.009;
 } 
 
 color heatmap(float val, float alpha, float multiplier)
