@@ -26,9 +26,9 @@
  * See: https://www.cct.lsu.edu/~fharhad/ganbatte/siggraph2007/CD2/content/papers/046-bridson.pdf
  */
 
-int xdim = 1200;
+int xdim = 1400;
 int ydim = 700;
-int nparticles = 10000;
+int nparticles = 200000;
 int framenumber = 0;
 
 float[][] vx = new float[xdim][ydim];
@@ -36,6 +36,7 @@ float[][] vy = new float[xdim][ydim];
 float[] px = new float[nparticles];
 float[] py = new float[nparticles];
 int pl[] = new int[nparticles];
+color pc[] = new color[nparticles];
 
 float c;
 
@@ -55,7 +56,11 @@ void setup()
 	for (int i = 0; i < nparticles; i++) {
 		px[i] = random(xdim);
 		py[i] = random(ydim);
-		pl[i] = int(random(nparticles / 100));
+		//pl[i] = int(random(nparticles / 100));
+		pl[i] = 1000;
+		pc[i] = color((px[i] / 5) % 100 + 100,
+			255 - (px[i] + py[i] / 2) % 255,
+			(500 - (px[i]) % 255) / 2, 40);
 	}
 	c = 1.3;
 }
@@ -64,7 +69,7 @@ void update_velocity_field()
 { 
 	int x, y, r, g, b;
 	float nscale = 1.3;
-	float amp = 950.0;
+	float amp = 900.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
 	for (x = 0; x < xdim; x++) {
@@ -122,7 +127,8 @@ void draw()
 		v = sqrt(ivx * ivx + ivy * ivy);
 		if (v > 6.0)
 			v = 6.0;
-		clr = heatmap(v / 2.0, 10, 0.1);
+		clr = heatmap(v / 2.0, 10, 0.0);
+		//clr = color(5, 5, 5, 0.1);
 		img.pixels[j] = clr;
 		tx++;
 		if (tx >= xdim) {
@@ -132,28 +138,36 @@ void draw()
 	}
 	img.updatePixels();
 	for (int i = 0; i < nparticles; i++) {
-		tx = int(px[i]) % xdim;
-		ty = int(py[i]) % ydim;
+		tx = int(px[i]);
+		ty = int(py[i]);
+		if (tx >= xdim)
+			continue;
+		if (ty >= ydim)
+			continue;
 		if (tx < 0)
-			tx = int(random(xdim));
+			continue;
 		if (ty < 0)
-			ty = int(random(ydim));
+			continue;
 		
 		ivx = vx[tx][ty];
 		ivy = vy[tx][ty];
 		px[i] += ivx;
 		py[i] += ivy;
+/*
 		v = sqrt(ivx * ivx + ivy * ivy);
 		if (v > 6.0)
 			v = 6.0;
 		clr = heatmap(v / 2.0, 200, 0.9);
+*/
+		clr = pc[i];
 
 		img.pixels[xdim * ty + tx] = clr;
-		pl[i]--;
+		//pl[i]--;
 		if (pl[i] <= 0) {
 			px[i] = random(xdim);
 			py[i] = random(ydim);
-			pl[i] = int(random(nparticles / 100));
+			//pl[i] = int(random(nparticles / 100));
+			pl[i] = 100;
 		}
 	}
 	img.updatePixels();
