@@ -68,7 +68,8 @@ void setup()
 void update_velocity_field()
 { 
 	int x, y, r, g, b;
-	float nscale = 1.3;
+	float nxscale = 1.3;
+	float nyscale = nxscale * float(ydim) / float(xdim);
 	float amp = 900.0;
 	float fx1, fy1, fx2, fy2, n1, n2, nx, ny, v, dx, dy;
 
@@ -76,12 +77,12 @@ void update_velocity_field()
 		for (y = 0; y < ydim; y++) {
 			dx =  (random(100) * 0.005) - 0.25;
 			dy =  (random(100) * 0.005) - 0.25;
-			fx1 = ((float(x - 1) + dx) / float(xdim)) * nscale;
-			fy1 = ((float(y - 1) + dy) / float(ydim)) * nscale;
+			fx1 = ((float(x - 1) + dx) / float(xdim)) * nxscale;
+			fy1 = ((float(y - 1) + dy) / float(ydim)) * nyscale;
 			dx =  (random(100) * 0.005) - 0.25;
 			dy =  (random(100) * 0.005) - 0.25;
-			fx2 = ((float(x + 1) + dx) / float(xdim)) * nscale;
-			fy2 = ((float(y + 1) + dy) / float(ydim)) * nscale;
+			fx2 = ((float(x + 1) + dx) / float(xdim)) * nxscale;
+			fy2 = ((float(y + 1) + dy) / float(ydim)) * nyscale;
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx2, fy1, c);
 			ny = -amp * (n2 - n1);
