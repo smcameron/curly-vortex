@@ -35,6 +35,7 @@ int framenumber = 0;
 PImage source_color = loadImage(source_image_file);
 float noise_scale = 15.0; /* xdim / 100 is not a bad default. */
 float velocity_amplification = 30.0; /* xdim / 50 is not a bad default. */
+int image_snapshot_period = 0;
 
 
 float[][] vx = new float[xdim][ydim];
@@ -187,6 +188,10 @@ void draw()
 	}
 	img.updatePixels();
 	image(img, 0, 0);
+	if (image_snapshot_period != 0 &&
+		(framenumber % image_snapshot_period) == 0) {
+		save("image" + (10000 + framenumber) + ".png");
+	}
 	framenumber++;
 }
 
