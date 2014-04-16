@@ -36,6 +36,7 @@ PImage source_color = loadImage(source_image_file);
 float noise_scale = 15.0; /* xdim / 100 is not a bad default. */
 float velocity_amplification = 30.0; /* xdim / 50 is not a bad default. */
 int image_snapshot_period = 0;
+int background_alpha = 5; /* between 0 and 255, needs to be a low number. */
 
 
 float[][] vx = new float[xdim][ydim];
@@ -143,7 +144,7 @@ void draw()
 		v = sqrt(ivx * ivx + ivy * ivy);
 		if (v > 6.0)
 			v = 6.0;
-		clr = heatmap(v / 2.0, 10, 0.0);
+		clr = heatmap(v / 2.0, background_alpha, 0.0);
 		//clr = color(5, 5, 5, 0.1);
 		img.pixels[j] = clr;
 		tx++;
