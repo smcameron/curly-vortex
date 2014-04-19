@@ -77,9 +77,36 @@ float c;
 
 PImage[] img = new PImage[6];
 
+int xo(int face)
+{
+	switch (face) {
+	case 0: return 1;
+	case 1: return 2;
+	case 2: return 3;
+	case 3: return 0;
+	case 4: return 1;
+	case 5: return 1;
+	}
+	return 0;
+}
+
+int yo(int face)
+{
+	switch (face) {
+	case 0: return 1;
+	case 1: return 1;
+	case 2: return 1;
+	case 3: return 1;
+	case 4: return 0;
+	case 5: return 2;
+	}
+	return 0;
+}
+
 void setup()
 {
-	int f, cx, cy;
+	int f;
+	float cx, cy;
 
 	size((int) (xdim * 4.1), (int) (ydim * 3.1));
 	frameRate(30);
@@ -98,9 +125,14 @@ void setup()
 			pf[i] = int(random(6 * 1000)) % 6;
 			pl[i] = 1000;
 			if (source_color != null) {
-				cx = int(float(source_color.width) * px[i] / float(xdim));
-				cy = int(float(source_color.height) * py[i] / float(ydim));
-				pc[i] = source_color.pixels[cy * source_color.width + cx]; 
+				int picx, picy;
+				cx = 0.25 * (float) source_color.width * px[i] / (float) xdim;
+				cy = 0.333333 * (float) source_color.height * py[i] / (float) ydim ;
+				picx = (int) ((float) source_color.width *
+							(float) xo(pf[i]) * 0.25 + cx);
+				picy = (int) ((float) source_color.height *
+							(float) yo(pf[i]) / 3.0 + cy);
+				pc[i] = source_color.pixels[picy * source_color.width + picx]; 
 			} else {
 				pc[i] = color((px[i] / 5) % 100 + 100,
 					255 - (px[i] + py[i] / 2) % 255,
@@ -418,34 +450,8 @@ void draw()
 	}
 
 	for (int f = 0; f < 6; f++) { 
-		int xo, yo;
-
 		img[f].updatePixels();
-		switch (f) {
-		case 0: xo = 1;
-			yo = 1;
-			break;
-		case 1: xo = 2;
-			yo = 1;
-			break;
-		case 2: xo = 3;
-			yo = 1;
-			break;
-		case 3: xo = 0;
-			yo = 1;
-			break;
-		case 4: xo = 1;
-			yo = 0;
-			break;
-		case 5: xo = 1;
-			yo = 2;
-			break;
-		default:
-			xo = -1;
-			yo = -1;
-			break;
-		}
-		image(img[f], int(xdim * xo), int(ydim * yo));
+		image(img[f], int(xdim * xo(f)), int(ydim * yo(f)));
 	}
 	if (image_snapshot_period != 0 &&
 		(framenumber % image_snapshot_period) == 0) {
