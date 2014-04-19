@@ -1,0 +1,44 @@
+#!/bin/sh
+# 
+# imagemagic script to chop a cube map into the parts.
+#
+
+image="$1"
+size="$2"
+prefix="$3"
+
+if [ "$size" = "" -o "$image" = "" ]
+then
+	cat 1>&2 << EOF
+Usage: chopit imagefile size [ prefix ]
+where size is the size in pixels of each square in the cube mapped texture
+and prefix, if specified, is something to put on the beginning of the output
+filenames.  If no prefix is specified, then files 0.png, 1.png, 2.png, 3.png,
+4.png and 5.png will be output, laid out as follows:
+
+    +---+
+    | 4 |
++---+---+---+---+
+| 3 | 0 | 1 | 2 |
++---+---+---+---+
+    | 5 |
+    +---+
+
+If a prefix is specified, for example, "blah-", then the files will be called
+blah-0.png, blah-1.png, ..., and so on. 
+
+EOF
+fi
+
+x0=0
+x1=$(expr "$size" \* 1)
+x2=$(expr "$size" \* 2)
+x3=$(expr "$size" \* 3)
+
+convert -crop "$size"x"$size"+"$x1"+"$x1" "$image" "$prefix"0.png
+convert -crop "$size"x"$size"+"$x2"+"$x1" "$image" "$prefix"1.png
+convert -crop "$size"x"$size"+"$x3"+"$x1" "$image" "$prefix"2.png
+convert -crop "$size"x"$size"+"$x0"+"$x1" "$image" "$prefix"3.png
+convert -crop "$size"x"$size"+"$x1"+"$x0" "$image" "$prefix"4.png
+convert -crop "$size"x"$size"+"$x1"+"$x2" "$image" "$prefix"5.png
+
