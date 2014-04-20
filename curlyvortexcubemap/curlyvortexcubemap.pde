@@ -62,7 +62,9 @@ int framenumber = 0;
 PImage source_color = loadImage(source_image_file);
 float noise_scale = 1.0; /* xdim / 100 is not a bad default. */
 float velocity_amplification = 30.0; /* xdim / 50 is not a bad default. */
-int image_snapshot_period = 50;
+float cube_vel_thru_pnoise_cloud = 0.009;
+int vel_field_update_interval = 0; /* no. of frames between updating vel field (0 == once only) */
+int image_snapshot_period = 150;
 int background_alpha = 3; /* between 0 and 255, needs to be a low number. */
 
 float[][][] vx = new float[6][xdim][ydim];
@@ -167,11 +169,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(y - 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(x + 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(y + 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(fx1, fy1, 0.0);
-				n2 = noise(fx2, fy1, 0.0);
+				n1 = noise(fx1 + c, fy1 + c, 0.0 + c);
+				n2 = noise(fx2 + c, fy1 + c, 0.0 + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(fx1, fy1, 0.0);
-				n2 = noise(fx1, fy2, 0.0);
+				n1 = noise(fx1 + c, fy1 + c, 0.0 + c);
+				n2 = noise(fx1 + c, fy2 + c, 0.0 + c);
 				nx = amp * (n2 - n1);
 				break;
 			case 1:
@@ -179,11 +181,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(y - 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(x + 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(y + 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(noise_scale, fy1, fx1);
-				n2 = noise(noise_scale, fy1, fx2);
+				n1 = noise(noise_scale + c, fy1 + c, fx1 + c);
+				n2 = noise(noise_scale + c, fy1 + c, fx2 + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(noise_scale, fy1, fx1);
-				n2 = noise(noise_scale, fy2, fx1);
+				n1 = noise(noise_scale + c, fy1 + c, fx1 + c);
+				n2 = noise(noise_scale + c, fy2 + c, fx1 + c);
 				nx = amp * (n2 - n1);
 				break;
 			case 2:
@@ -191,11 +193,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(y - 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(xdim - x - 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(y + 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(fx1, fy1, noise_scale);
-				n2 = noise(fx2, fy1, noise_scale);
+				n1 = noise(fx1 + c, fy1 + c, noise_scale + c);
+				n2 = noise(fx2 + c, fy1 + c, noise_scale + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(fx1, fy1, noise_scale);
-				n2 = noise(fx1, fy2, noise_scale);
+				n1 = noise(fx1 + c, fy1 + c, noise_scale + c);
+				n2 = noise(fx1 + c, fy2 + c, noise_scale + c);
 				nx = amp * (n2 - n1);
 				break;
 			case 3:
@@ -203,11 +205,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(y - 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(xdim - x - 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(y + 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(0.0, fy1, fx1);
-				n2 = noise(0.0, fy1, fx2);
+				n1 = noise(0.0 + c, fy1 + c, fx1 + c);
+				n2 = noise(0.0 + c, fy1 + c, fx2 + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(0.0, fy1, fx1);
-				n2 = noise(0.0, fy2, fx1);
+				n1 = noise(0.0 + c, fy1 + c, fx1 + c);
+				n2 = noise(0.0 + c, fy2 + c, fx1 + c);
 				nx = amp * (n2 - n1);
 				break;
 			case 4:
@@ -215,11 +217,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(ydim - y + 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(x + 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(ydim - y - 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(fx1, 0.0, fy1);
-				n2 = noise(fx2, 0.0, fy1);
+				n1 = noise(fx1 + c, 0.0 + c, fy1 + c);
+				n2 = noise(fx2 + c, 0.0 + c, fy1 + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(fx1, 0.0, fy1);
-				n2 = noise(fx1, 0.0, fy2);
+				n1 = noise(fx1 + c, 0.0 + c, fy1 + c);
+				n2 = noise(fx1 + c, 0.0 + c, fy2 + c);
 				nx = amp * (n2 - n1);
 				break;
 			case 5:
@@ -227,11 +229,11 @@ void update_velocity_field(int face)
 				fy1 = ((float(y - 1) + dy) / float(ydim)) * noise_scale;
 				fx2 = ((float(x + 1) + dx) / float(xdim)) * noise_scale;
 				fy2 = ((float(y + 1) + dy) / float(ydim)) * noise_scale;
-				n1 = noise(fx1, noise_scale, fy1);
-				n2 = noise(fx2, noise_scale, fy1);
+				n1 = noise(fx1 + c, noise_scale + c, fy1 + c);
+				n2 = noise(fx2 + c, noise_scale + c, fy1 + c);
 				ny = -amp * (n2 - n1);
-				n1 = noise(fx1, noise_scale, fy1);
-				n2 = noise(fx1, noise_scale, fy2);
+				n1 = noise(fx1 + c, noise_scale + c, fy1 + c);
+				n2 = noise(fx1 + c, noise_scale + c, fy2 + c);
 				nx = amp * (n2 - n1);
 				break;
 			default:
@@ -243,7 +245,7 @@ void update_velocity_field(int face)
 		  vy[face][x][y] = ny;
 		}
 	}
-	c = c + 0.009;
+	c = c + cube_vel_thru_pnoise_cloud;
 } 
 
 color heatmap(float val, float alpha, float multiplier)
@@ -391,9 +393,17 @@ void draw()
 	int tx, ty;
 	color clr;
 
-	if (framenumber == 0) {
-		for (int f = 0; f < 6; f++) {
-			update_velocity_field(f);
+	if (vel_field_update_interval > 0) {
+		if ((framenumber % vel_field_update_interval) == 0) {
+			for (int f = 0; f < 6; f++) {
+				update_velocity_field(f);
+			}
+		}
+	} else {
+		if (framenumber == 0) {
+			for (int f = 0; f < 6; f++) {
+				update_velocity_field(f);
+			}
 		}
 	}
 	for (int f = 0; f < 6; f++) {
