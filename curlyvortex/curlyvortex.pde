@@ -158,13 +158,13 @@ void draw()
 		tx = int(px[i]);
 		ty = int(py[i]);
 		if (tx >= xdim)
-			continue;
+			tx = tx - xdim;
 		if (ty >= ydim)
-			continue;
+			ty = ty - ydim;
 		if (tx < 0)
-			continue;
+			tx = tx + xdim;
 		if (ty < 0)
-			continue;
+			ty = ty + ydim;
 		
 		ivx = vx[tx][ty];
 		ivy = vy[tx][ty];
