@@ -28,15 +28,17 @@
 
 /* user adjustable parameters */
 String source_image_file = "/home/scameron/test.jpg";
-int xdim = 1400;
-int ydim = 700;
-int nparticles = 500000;
+int xdim = 1000;
+int ydim = 600;
+int nparticles = 2000000;
 int framenumber = 0;
 PImage source_color = loadImage(source_image_file);
-float noise_scale = 15.0; /* xdim / 100 is not a bad default. */
-float velocity_amplification = 30.0; /* xdim / 50 is not a bad default. */
+float noise_scale = 8.0; /* xdim / 100 is not a bad default. */
+float velocity_amplification = 15.0; /* xdim / 50 is not a bad default. */
 int image_snapshot_period = 0;
 int background_alpha = 5; /* between 0 and 255, needs to be a low number. */
+int numbands = 4;
+float bandfactor = 0.3;
 
 
 float[][] vx = new float[xdim][ydim];
@@ -105,7 +107,8 @@ void update_velocity_field()
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx1, fy2, c);
 			nx = amp * (n2 - n1);
-			vx[x][y] = nx;
+			vx[x][y] = nx + bandfactor *
+				cos((float) y / (float) ydim * numbands * 3.141527);
 			vy[x][y] = ny;
 		}
 	}
