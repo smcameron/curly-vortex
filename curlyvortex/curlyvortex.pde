@@ -40,12 +40,14 @@ int background_alpha = 5; /* between 0 and 255, needs to be a low number. */
 int numbands = 4;
 float bandfactor = 0.3;
 
-
+/* vx, vy are the velocity field */
 float[][] vx = new float[xdim][ydim];
 float[][] vy = new float[xdim][ydim];
+
+/* px,py,pc are particle coords and color */
 float[] px = new float[nparticles];
 float[] py = new float[nparticles];
-int pl[] = new int[nparticles];
+int pl[] = new int[nparticles]; /* particle lifetime, not used */
 color pc[] = new color[nparticles];
 
 float c;
@@ -93,6 +95,10 @@ void update_velocity_field()
 
 	for (x = 0; x < xdim; x++) {
 		for (y = 0; y < ydim; y++) {
+			/* Calculate gradient of noise field at x,y.
+			 * fx1,fy1, fx2,fy2 are points diagonally near x,y
+			 * Add slight amount of randomness (dx,dy) to hide banding of perlin noise
+			 */
 			dx =  (random(100) * 0.005) - 0.25;
 			dy =  (random(100) * 0.005) - 0.25;
 			fx1 = ((float(x - 1) + dx) / float(xdim)) * nxscale;
@@ -101,12 +107,20 @@ void update_velocity_field()
 			dy =  (random(100) * 0.005) - 0.25;
 			fx2 = ((float(x + 1) + dx) / float(xdim)) * nxscale;
 			fy2 = ((float(y + 1) + dy) / float(ydim)) * nyscale;
+
+			/* Calculate deltax of noise at x,y and deltay at x,y
+			 * (-deltax, deltay) is the curl of the noise field at x,y.
+			 */
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx2, fy1, c);
 			ny = -amp * (n2 - n1);
 			n1 = noise(fx1, fy1, c);
 			n2 = noise(fx1, fy2, c);
 			nx = amp * (n2 - n1);
+
+			/* Use the curl of the noise field as velocity.
+			 * but modulate with bands of horizontal velocity
+			 */
 			vx[x][y] = nx + bandfactor *
 				cos((float) y / (float) ydim * numbands * 3.141527);
 			vy[x][y] = ny;
@@ -141,6 +155,8 @@ void draw()
 	if ((framenumber % 20) == 0) {
 		update_velocity_field();
 	}
+
+	/* slowly fade out image */
 	for (int j = 0; j < img.pixels.length; j++) {
 		ivx = vx[tx][ty];
 		ivy = vy[tx][ty];
@@ -157,7 +173,11 @@ void draw()
 		}
 	}
 	img.updatePixels();
+
+	/* move particles */
 	for (int i = 0; i < nparticles; i++) {
+
+		/* wrap particles at image edges */
 		tx = int(px[i]);
 		ty = int(py[i]);
 		if (tx >= xdim)
@@ -168,7 +188,8 @@ void draw()
 			tx = tx + xdim;
 		if (ty < 0)
 			ty = ty + ydim;
-		
+
+		/* Move particles according to velocity field at current location */
 		ivx = vx[tx][ty];
 		ivy = vy[tx][ty];
 		px[i] += ivx;
@@ -181,7 +202,10 @@ void draw()
 */
 		clr = pc[i];
 
+		/* update image color according to particle color */
 		img.pixels[xdim * ty + tx] = clr;
+
+		/* age particles (not used) */
 		//pl[i]--;
 		if (pl[i] <= 0) {
 			px[i] = random(xdim);
