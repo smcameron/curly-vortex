@@ -28,8 +28,15 @@
 
 /* user adjustable parameters */
 String source_image_file = "/home/scameron/test.jpg";
+
+/* If you change maxxdim or maxydim you must also change size() in setup()
+ * because processing is fricken dumb that way.
+ */
+int maxxdim = 3000;
+int maxydim = 1800;
 int xdim = 1000;
 int ydim = 600;
+
 int nparticles = 2000000;
 int framenumber = 0;
 float noise_scale = 8.0; /* xdim / 100 is not a bad default. */
@@ -40,8 +47,8 @@ int numbands = 4;
 float bandfactor = 0.3;
 
 /* vx, vy are the velocity field */
-float[][] vx = new float[xdim][ydim];
-float[][] vy = new float[xdim][ydim];
+float[][] vx = new float[maxxdim][maxydim];
+float[][] vy = new float[maxxdim][maxydim];
 
 /* px,py,pc are particle coords and color */
 float[] px = new float[nparticles];
@@ -58,7 +65,19 @@ void setup()
 	PImage source_color = loadImage(source_image_file);
 	int cx, cy;
 
-	size(1000, 600);
+	if (source_color != null) {
+		xdim = source_color.width;
+		ydim = source_color.height;
+		if (xdim > maxxdim) {
+			xdim = maxxdim;
+		}
+		if (ydim > maxydim) {
+			ydim = maxydim;
+		}
+	}
+
+	size(3000, 1800);
+	surface.setSize(xdim, ydim);
 	frameRate(30);
 	img = createImage(xdim, ydim, ARGB); 
 	img.loadPixels();
