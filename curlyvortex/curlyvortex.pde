@@ -32,7 +32,6 @@ int xdim = 1000;
 int ydim = 600;
 int nparticles = 2000000;
 int framenumber = 0;
-PImage source_color = loadImage(source_image_file);
 float noise_scale = 8.0; /* xdim / 100 is not a bad default. */
 float velocity_amplification = 15.0; /* xdim / 50 is not a bad default. */
 int image_snapshot_period = 0;
@@ -56,9 +55,10 @@ PImage img;
 
 void setup()
 {
+	PImage source_color = loadImage(source_image_file);
 	int cx, cy;
 
-	size(xdim, ydim);
+	size(1000, 600);
 	frameRate(30);
 	img = createImage(xdim, ydim, ARGB); 
 	img.loadPixels();
